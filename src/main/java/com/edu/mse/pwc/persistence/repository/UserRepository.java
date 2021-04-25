@@ -1,7 +1,10 @@
 package com.edu.mse.pwc.persistence.repository;
 
-import com.edu.mse.pwc.persistence.entities.User;
+import com.edu.mse.pwc.persistence.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+    Optional<UserEntity> findByUsername(String username);
 }

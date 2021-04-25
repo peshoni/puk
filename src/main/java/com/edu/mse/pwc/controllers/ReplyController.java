@@ -3,10 +3,9 @@ package com.edu.mse.pwc.controllers;
 import com.edu.mse.pwc.dtos.ReplyDto;
 import com.edu.mse.pwc.services.ReplyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +16,16 @@ public class ReplyController {
 
     @PostMapping
     public ReplyDto createTopic(@RequestBody ReplyDto reply) {
-        return replyService.createTopic(reply);
+        return replyService.createReply(reply);
     }
+
+    @GetMapping("/topicId/{topicId}")
+    public List<ReplyDto> getReplies(@PathVariable long topicId) {
+        return replyService.getRepliesFor(topicId);
+    }
+    //ADD list replies
+    //add update reply
+    // @PutMapping("")
+
+
 }

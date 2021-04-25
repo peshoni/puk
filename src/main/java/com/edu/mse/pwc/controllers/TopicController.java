@@ -3,18 +3,17 @@ package com.edu.mse.pwc.controllers;
 import com.edu.mse.pwc.dtos.TopicDto;
 import com.edu.mse.pwc.services.TopicService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/topics")
+@RolesAllowed(value = {"MODERATOR", "ADMIN", "USER"})
 public class TopicController {
 
     private final TopicService topicService;
@@ -32,6 +31,12 @@ public class TopicController {
     @PostMapping
     public TopicDto createTopic(@RequestBody TopicDto topic) {
         return topicService.createTopic(topic);
+    }
+
+    //TODO CREATE REPLY NOT FOUND EX
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    private ResponseEntity<String> handleExceptions() {
+        return new ResponseEntity<String>("Error...", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
