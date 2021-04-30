@@ -1,5 +1,6 @@
 package com.edu.mse.pwc.security;
 
+import com.edu.mse.pwc.utils.P;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 @Configuration
+
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
     private final static String[] GRANT_TYPES = {"password", "get_token", "refresh_token"};
@@ -23,8 +25,10 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Autowired
     private AuthenticationManager authenticationManager;
 
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        P.syso("Authorize");
         clients.inMemory()
                 .withClient("admin")
                 .secret(encoder().encode("admin"))
@@ -36,13 +40,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.authenticationManager(authenticationManager)
-                 .tokenStore(tokenStore);
+                .tokenStore(tokenStore);
     }
 
     @Bean
     public TokenStore tokenStore() {
         return new InMemoryTokenStore();
     }
+
 
     private PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();

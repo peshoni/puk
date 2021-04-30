@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,21 +25,37 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:test.properties")
 class PwcApplicationTests {
 
-    @Autowired
-    private MockMvc mvc;
+	@Autowired
+	private MockMvc mvc;
 
-    @Test
-    @Order(1)
-    void contextLoads() throws Exception {
-        TopicDto topic = TopicDto.builder().title("test topic").userId(1L).build();
-        Gson gson = new Gson();
-        String topicToJson = gson.toJson(topic);
-        System.out.println(topicToJson);
+	@Test
+	@Order(1)
+	void testTopicCreation() throws Exception {
+		TopicDto topic = TopicDto.builder().title("Test topic").userId(1L).build();
+		Gson gson = new Gson();
+		String topicJson = gson.toJson(topic);
 
-        MockHttpServletRequestBuilder topicPost = post("/api/topics").contentType(MediaType.APPLICATION_JSON).content(topicToJson);
+		MockHttpServletRequestBuilder topicPost = post("/api/topics")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(topicJson);
 
-        mvc.perform(topicPost).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("1"));
-    }
+		mvc.perform(topicPost)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value("1"))
+				.andExpect(jsonPath("$.title").value("Test topic"))
+				.andExpect(jsonPath("$.createdAt").exists())
+				.andExpect(jsonPath("$.modifiedAt").exists());
+	}
+
+	@Test
+	@Order(2)
+	void testGetTopics() throws Exception {
+		MockHttpServletRequestBuilder topicPost = get("/api/topics").contentType(MediaType.APPLICATION_JSON);
+
+		mvc.perform(topicPost)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].title").value("Test topic"));
+	}
 
 }

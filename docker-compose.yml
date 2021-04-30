@@ -1,0 +1,39 @@
+version: '2'
+
+networks:
+  pwc_network:
+    driver: "bridge"
+
+services:
+  pwc:
+    container_name: pwc
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - "pwc_network"
+    ports:
+      - "8082:8082"
+    restart: on-failure
+    entrypoint: java -Dspring.profiles.active=docker -jar pwc.jar
+    depends_on:
+      - pwcDb
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/compose-postgres
+      - SPRING_DATASOURCE_USERNAME=compose-postgres
+      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    volumes:
+      - ./data:/data
+
+
+  pwcDb:
+    image: 'postgres:13.1-alpine'
+    container_name: pwcDb
+    driver-class-name: org.postgresql.Driver
+    environment:
+      - POSTGRES_USER=compose-postgres
+      - POSTGRES_PASSWORD=compose-postgres
+    ports:
+      - "5432:5432"
+    restart: always
