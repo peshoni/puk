@@ -1,6 +1,5 @@
 package com.edu.mse.pwc.security;
 
-import com.edu.mse.pwc.utils.P;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,10 +18,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //  http.csrf().disable();
-
-
-        P.syso("HTTP");
         http.csrf()
                 .disable()
                 .authorizeRequests()
@@ -32,7 +27,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        P.syso("WEB");
-        //web.ignoring().antMatchers("/h2-console/**");
+        web.ignoring().antMatchers("/api/reg/");
+        //  web.ignoring().antMatchers("/h2-console/**");
     }
 }

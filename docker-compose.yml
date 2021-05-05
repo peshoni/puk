@@ -30,7 +30,7 @@ services:
   pwcDb:
     image: 'postgres:13.1-alpine'
     container_name: pwcDb
-    driver-class-name: org.postgresql.Driver
+
     environment:
       - POSTGRES_USER=compose-postgres
       - POSTGRES_PASSWORD=compose-postgres

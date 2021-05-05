@@ -3,6 +3,7 @@ package com.edu.mse.pwc.services;
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.TopicDto;
 import com.edu.mse.pwc.exceptions.DuplicateTopicException;
+import com.edu.mse.pwc.exceptions.ReplyNotFoundException;
 import com.edu.mse.pwc.exceptions.TopicNotFoundException;
 import com.edu.mse.pwc.mappers.TopicMapper;
 import com.edu.mse.pwc.persistence.entities.TopicEntity;
@@ -62,5 +63,20 @@ public class TopicService {
             return new ApiResponse<List<TopicDto>>(HttpStatus.OK.value(), "Empty",
                     new ArrayList<TopicDto>());
         }
+    }
+
+    public TopicDto update(TopicDto topic) {
+
+        Optional<TopicEntity> byId = topicRepository.findById(topic.getId());
+        if (!byId.isPresent()) {
+            throw new ReplyNotFoundException("There is no topic with id " + topic.getId());
+        }
+        TopicEntity topicEntity = byId.get();
+        topicEntity.setTitle(topic.getTitle());
+        topicEntity.setModifiedBy(topic.getModifiedBy());
+
+
+        TopicEntity updated = topicRepository.save(topicEntity);
+        return topicMapper.topicEntityToDto(updated);
     }
 }

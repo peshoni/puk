@@ -7,6 +7,7 @@ import com.edu.mse.pwc.exceptions.TopicNotFoundException;
 import com.edu.mse.pwc.mappers.ReplyMapper;
 import com.edu.mse.pwc.persistence.entities.ReplyEntity;
 import com.edu.mse.pwc.persistence.entities.TopicEntity;
+import com.edu.mse.pwc.persistence.entities.UserEntity;
 import com.edu.mse.pwc.persistence.repository.ReplyRepository;
 import com.edu.mse.pwc.persistence.repository.TopicRepository;
 import com.edu.mse.pwc.utils.P;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
-
+    private final UserService userService;
     private final ReplyRepository replyRepository;
     private final ReplyMapper replyMapper;
     private final TopicRepository topicRepository;
@@ -33,10 +34,17 @@ public class ReplyService {
     public ReplyDto createReply(ReplyDto reply) {
         P.syso(reply);
         Long topicId = reply.getTopicId();
+        Long userId = reply.getUserId();
+
         TopicEntity topicEntity = getTopicEntity(topicId);
 
         ReplyEntity replyEntity = replyMapper.replyDtoToEntity(reply);
         replyEntity.setTopic(topicEntity);
+
+        UserEntity userEntity = userService.getUserEntity(userId);
+        replyEntity.setUser(userEntity);
+
+
         ReplyEntity newReplyEntity = replyRepository.save(replyEntity);
 
         return replyMapper.replyEntityToDto(newReplyEntity);
@@ -73,13 +81,14 @@ public class ReplyService {
                 .collect(Collectors.toList());
     }
 
-    public ReplyDto updateReply(Long replyId, ReplyDto reply) {
-        Optional<ReplyEntity> byId = replyRepository.findById(replyId);
+    public ReplyDto updateReply(ReplyDto reply) {
+        Optional<ReplyEntity> byId = replyRepository.findById(reply.getId());
         if (!byId.isPresent()) {
-            throw new ReplyNotFoundException("There is no reply with id " + replyId);
+            throw new ReplyNotFoundException("There is no reply with id " + reply.getId());
         }
         ReplyEntity replyEntity = byId.get();
         replyEntity.setText(reply.getText());
+        replyEntity.setModifiedBy(reply.getModifiedBy());
 
         ReplyEntity updated = replyRepository.save(replyEntity);
         return replyMapper.replyEntityToDto(updated);

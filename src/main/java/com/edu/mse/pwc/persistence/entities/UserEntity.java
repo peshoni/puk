@@ -45,4 +45,9 @@ public class UserEntity /*extends BaseEntity*/ {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TopicEntity> topics;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ReplyEntity> reply;
+
+
 }

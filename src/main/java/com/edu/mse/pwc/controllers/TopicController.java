@@ -2,13 +2,15 @@ package com.edu.mse.pwc.controllers;
 
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.TopicDto;
-import com.edu.mse.pwc.exceptions.DuplicateTopicException;
 import com.edu.mse.pwc.services.TopicService;
+import com.edu.mse.pwc.utils.JwtUtils;
+import com.edu.mse.pwc.utils.P;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -18,6 +20,7 @@ import java.util.List;
 public class TopicController {
 
     private final TopicService topicService;
+
 
     @GetMapping("/{id}/")
     public TopicDto getTopic(@PathVariable Long id) {
@@ -31,12 +34,17 @@ public class TopicController {
 
     @PostMapping
     public ApiResponse<TopicDto> createTopic(@RequestBody TopicDto topic) {
-        try {
-            TopicDto newTopic = topicService.createTopic(topic);
-            return new ApiResponse<TopicDto>(HttpStatus.OK.value(), "Created successfully", newTopic);
-        } catch (DuplicateTopicException ex) {
-            return new ApiResponse<TopicDto>(HttpStatus.ACCEPTED.value(), "Duplicated topic", null);
-        }
+        TopicDto newTopic = topicService.createTopic(topic);
+        return new ApiResponse<TopicDto>(HttpStatus.OK.value(), "Created successfully", newTopic);
+
+//        try {
+//            P.syso(topic);
+//            TopicDto newTopic = topicService.createTopic(topic);
+//            return new ApiResponse<TopicDto>(HttpStatus.OK.value(), "Created successfully", newTopic);
+//        } catch (DuplicateTopicException ex) {
+//            P.syso(ex);
+//            return new ApiResponse<TopicDto>(HttpStatus.ACCEPTED.value(), "Duplicated topic", null);
+//        }
     }
 
     @GetMapping("/{page}/{size}/")
@@ -46,11 +54,20 @@ public class TopicController {
         return topicService.getPageWithTopics(pageNumber, pageSize);
     }
 
-//    @ExceptionHandler(value = {TopicNotFoundException.class, ReplyNotFoundException.class})
-//    protected ResponseEntity<ErrorDto> handleException(Exception e) {
-//        ErrorDto build = ErrorDto.builder().message(e.getMessage()).build();
-//        ResponseEntity<ErrorDto> error = new ResponseEntity<>(build, HttpStatus.INTERNAL_SERVER_ERROR);
-//        return error;
-//    }
+    @PutMapping()
+    public TopicDto updateTopic(HttpServletRequest request, @RequestBody TopicDto topic) {
+
+        String header = request.getHeader("Authorization");
+        String token = header.split(" ")[1];
+        P.syso(token);
+
+        JwtUtils.JwtClaims claims = JwtUtils.getClaims(token);
+
+        P.syso(claims.getFirstName());
+        //     String claims = JwtDecoder.decode(header).getClaims();
+//        OAuth2AccessToken t = a.extractAccessToken(header);
+
+        return topicService.update(topic);
+    }
 
 }

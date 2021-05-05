@@ -12,9 +12,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReplyDto {
-
+    private Long id;
     private Date modifiedAt;
     private String text;
     private Long topicId;
-
+    private Long userId;
+    private UserDto user;
+    private Long modifiedBy;
 }

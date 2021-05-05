@@ -25,11 +25,15 @@ public class TopicEntity extends BaseEntity {
     @OneToMany(mappedBy = "topic", fetch = FetchType.EAGER)
     private List<ReplyEntity> reply;
 
-//
-//    private Long userId;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @Column(name = "modified_by")
+    private Long modifiedBy;
+
+//    @ManyToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "modified_by")
+//    private UserEntity user;
 
 }

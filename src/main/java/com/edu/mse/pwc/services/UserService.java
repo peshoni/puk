@@ -30,6 +30,14 @@ public class UserService {
         return userRepository.findAll().stream().map(userMapper::userEntityToDto).collect(Collectors.toList());
     }
 
+
+    public UserEntity getUserByUsername(String username) throws IllegalArgumentException {
+        UserEntity user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("No such user " + username));
+        return user;
+    }
+
     public UserDto getUser(long id) {
         Optional<UserEntity> byId = userRepository.findById(id);
         if (!byId.isPresent()) {
@@ -48,8 +56,6 @@ public class UserService {
 
     public UserDto updateUser(UserDto user) {
         UserEntity newOne = userMapper.userDtoToEntity(user);
-        P.syso(newOne);
-        //  newOne.setId(entity.getId());
         newOne = userRepository.save(newOne);
         P.syso(newOne);
         return userMapper.userEntityToDto(newOne);

@@ -24,4 +24,12 @@ public class ReplyEntity extends BaseEntity {
 
     @Column
     private String text;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    @Column(name = "modified_by")
+    private Long modifiedBy;
+
 }
