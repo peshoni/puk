@@ -5,7 +5,6 @@ import com.edu.mse.pwc.persistence.entities.UserEntity;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,7 +28,7 @@ class PwcApplicationTests {
     @Autowired
     private MockMvc mvc;
 
-    @Test
+    // @Test
     @Order(1)
     void testTopicCreation() throws Exception {
         UserEntity user = new UserEntity();
@@ -50,7 +49,7 @@ class PwcApplicationTests {
                 .andExpect(jsonPath("$.modifiedAt").exists());
     }
 
-    @Test
+    // @Test
     @Order(2)
     void testGetTopics() throws Exception {
         MockHttpServletRequestBuilder topicPost = get("/api/topics").contentType(MediaType.APPLICATION_JSON);

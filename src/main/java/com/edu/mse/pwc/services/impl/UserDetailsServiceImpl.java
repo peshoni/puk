@@ -29,8 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new IllegalArgumentException("No such user " + username));
 
         P.syso("Load user: " + username);
-
-
         UserDetails u = User.builder()
                 .username(user.getUsername())
                 .password(passwordEncoder.encode(user.getPassword()))

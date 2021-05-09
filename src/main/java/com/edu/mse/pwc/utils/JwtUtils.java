@@ -12,6 +12,8 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 
+// Author:
+//https://gist.github.com/soumyadey/ff748d3e21daded1a30c544198cd9a5b
 public class JwtUtils {
 
     private static JsonMapper jsonMapper = JsonMapper.builder()
@@ -64,7 +66,7 @@ public class JwtUtils {
         public String getClientId();
 
         public String getGrantType();
-        
+
         public String getFirstName();
     }
 

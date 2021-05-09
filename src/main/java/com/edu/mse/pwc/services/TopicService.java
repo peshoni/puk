@@ -2,6 +2,7 @@ package com.edu.mse.pwc.services;
 
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.TopicDto;
+import com.edu.mse.pwc.dtos.UserDto;
 import com.edu.mse.pwc.exceptions.DuplicateTopicException;
 import com.edu.mse.pwc.exceptions.ReplyNotFoundException;
 import com.edu.mse.pwc.exceptions.TopicNotFoundException;
@@ -49,7 +50,11 @@ public class TopicService {
     }
 
     public List<TopicDto> getAllTopics() {
-        return topicRepository.findAll().stream().map(topicMapper::topicEntityToDto).collect(Collectors.toList());
+        List<TopicDto> list = topicRepository.findAll().stream().map(topicMapper::topicEntityToDto).collect(Collectors.toList());
+        list.forEach(t -> {
+            clearUserSensitiveData(t.getUser());
+        });
+        return list;
     }
 
     public ApiResponse<List<TopicDto>> getPageWithTopics(int pageNumber, int pageSize) {
@@ -78,5 +83,11 @@ public class TopicService {
 
         TopicEntity updated = topicRepository.save(topicEntity);
         return topicMapper.topicEntityToDto(updated);
+    }
+
+    private void clearUserSensitiveData(UserDto user) {
+        user.setId(0l);
+        user.setPassword("*");
+        user.setUsername("*");
     }
 }

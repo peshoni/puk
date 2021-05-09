@@ -2,7 +2,9 @@ package com.edu.mse.pwc.controllers;
 
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.UserDto;
+import com.edu.mse.pwc.persistence.entities.Role;
 import com.edu.mse.pwc.services.UserService;
+import com.edu.mse.pwc.utils.P;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,8 @@ public class RegistrationController {
             userService.getUserByUsername(newUser.getUsername());
             return new ApiResponse<UserDto>(HttpStatus.OK.value(), "Username already exist", null);
         } catch (Exception e) {
+            P.syso(newUser);
+            newUser.setRole(Role.USER);
             UserDto dto = userService.createUser(newUser);
             return new ApiResponse<UserDto>(HttpStatus.OK.value(), "Created successfully", dto);
         }
