@@ -24,7 +24,7 @@ public class TopicController {
 
     @GetMapping("/{id}/")
     public TopicDto getTopic(@PathVariable Long id) {
-        return topicService.getTopic(id);
+        return topicService.getTopicDto(id);
     }
 
     @GetMapping

@@ -2,13 +2,12 @@ package com.edu.mse.pwc.controllers;
 
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.ReplyDto;
+import com.edu.mse.pwc.dtos.TopicDto;
 import com.edu.mse.pwc.services.ReplyService;
 import com.edu.mse.pwc.services.UserService;
 import com.edu.mse.pwc.utils.P;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,8 +25,8 @@ public class ReplyController {
 
 
     @GetMapping("/topicId/{topicId}/{page}/{size}/")
-    public ApiResponse<List<ReplyDto>> getRepliesForTopic(@PathVariable Long topicId, @PathVariable(value = "page") Integer pageNumber,
-                                                          @PathVariable(value = "size") Integer pageSize) {
+    public ApiResponse<TopicDto> getRepliesForTopic(@PathVariable Long topicId, @PathVariable(value = "page") Integer pageNumber,
+                                                    @PathVariable(value = "size") Integer pageSize) {
         return replyService.getPageWithRepliesForTopic(topicId, pageNumber, pageSize);
     }
 

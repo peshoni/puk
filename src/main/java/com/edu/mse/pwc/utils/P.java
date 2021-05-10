@@ -36,7 +36,13 @@ public class P {
     public static UserDto getLoggedUserFormRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
 
-        
+
         return null;
+    }
+
+    public static void clearUserSensitiveData(UserDto user) {
+        user.setId(0l);
+        user.setPassword("*");
+        user.setUsername("*");
     }
 }

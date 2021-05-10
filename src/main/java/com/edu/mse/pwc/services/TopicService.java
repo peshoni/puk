@@ -2,7 +2,6 @@ package com.edu.mse.pwc.services;
 
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.TopicDto;
-import com.edu.mse.pwc.dtos.UserDto;
 import com.edu.mse.pwc.exceptions.DuplicateTopicException;
 import com.edu.mse.pwc.exceptions.ReplyNotFoundException;
 import com.edu.mse.pwc.exceptions.TopicNotFoundException;
@@ -40,7 +39,7 @@ public class TopicService {
         }
     }
 
-    public TopicDto getTopic(Long id) {
+    public TopicDto getTopicDto(Long id) {
         Optional<TopicEntity> byId = topicRepository.findById(id);
         if (byId.isPresent()) {
             TopicEntity topicEntity = byId.get();
@@ -49,25 +48,39 @@ public class TopicService {
         throw new TopicNotFoundException("No topic with id " + id + " was found");
     }
 
+    public TopicEntity getTopicEntity(Long id) {
+        Optional<TopicEntity> byId = topicRepository.findById(id);
+        if (byId.isPresent()) {
+            return byId.get();
+        }
+        throw new TopicNotFoundException("No topic with id " + id + " was found");
+    }
+
     public List<TopicDto> getAllTopics() {
         List<TopicDto> list = topicRepository.findAll().stream().map(topicMapper::topicEntityToDto).collect(Collectors.toList());
         list.forEach(t -> {
-            clearUserSensitiveData(t.getUser());
+            P.clearUserSensitiveData(t.getUser());
         });
         return list;
     }
 
     public ApiResponse<List<TopicDto>> getPageWithTopics(int pageNumber, int pageSize) {
+
+
         Pageable paging = PageRequest.of(pageNumber, pageSize);
         Page<TopicEntity> pageResult = topicRepository.findAll(paging);
         P.syso(pageResult.getTotalElements());
         if (pageResult.hasContent()) {
+
+
             return new ApiResponse<List<TopicDto>>(HttpStatus.OK.value(), "Fetched successfully",
                     pageResult.getContent().stream().map(topicMapper::topicEntityToDto).collect(Collectors.toList()), pageResult.getTotalElements());
         } else {
             return new ApiResponse<List<TopicDto>>(HttpStatus.OK.value(), "Empty",
                     new ArrayList<TopicDto>());
         }
+
+
     }
 
     public TopicDto update(TopicDto topic) {
@@ -85,9 +98,4 @@ public class TopicService {
         return topicMapper.topicEntityToDto(updated);
     }
 
-    private void clearUserSensitiveData(UserDto user) {
-        user.setId(0l);
-        user.setPassword("*");
-        user.setUsername("*");
-    }
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +21,5 @@ public class TopicDto {
     private Long userId;
     private UserDto user;
     private Long modifiedBy;
+    private List<ReplyDto> repliesPage;
 }

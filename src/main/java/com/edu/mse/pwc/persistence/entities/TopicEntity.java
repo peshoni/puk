@@ -31,9 +31,4 @@ public class TopicEntity extends BaseEntity {
 
     @Column(name = "modified_by")
     private Long modifiedBy;
-
-//    @ManyToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "modified_by")
-//    private UserEntity user;
-
 }

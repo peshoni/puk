@@ -2,14 +2,13 @@ package com.edu.mse.pwc.services;
 
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.ReplyDto;
+import com.edu.mse.pwc.dtos.TopicDto;
 import com.edu.mse.pwc.exceptions.ReplyNotFoundException;
-import com.edu.mse.pwc.exceptions.TopicNotFoundException;
 import com.edu.mse.pwc.mappers.ReplyMapper;
 import com.edu.mse.pwc.persistence.entities.ReplyEntity;
 import com.edu.mse.pwc.persistence.entities.TopicEntity;
 import com.edu.mse.pwc.persistence.entities.UserEntity;
 import com.edu.mse.pwc.persistence.repository.ReplyRepository;
-import com.edu.mse.pwc.persistence.repository.TopicRepository;
 import com.edu.mse.pwc.utils.P;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,16 +25,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReplyService {
     private final UserService userService;
+    private final TopicService topicService;
+
     private final ReplyRepository replyRepository;
     private final ReplyMapper replyMapper;
-    private final TopicRepository topicRepository;
+    //  private final TopicRepository topicRepository;
 
     public ReplyDto createReply(ReplyDto reply) {
         P.syso(reply);
         Long topicId = reply.getTopicId();
         Long userId = reply.getUserId();
 
-        TopicEntity topicEntity = getTopicEntity(topicId);
+        TopicEntity topicEntity = topicService.getTopicEntity(topicId);
 
         ReplyEntity replyEntity = replyMapper.replyDtoToEntity(reply);
         replyEntity.setTopic(topicEntity);
@@ -50,16 +50,26 @@ public class ReplyService {
         return replyMapper.replyEntityToDto(newReplyEntity);
     }
 
-    public ApiResponse<List<ReplyDto>> getPageWithRepliesForTopic(Long topicId, int pageNumber, int pageSize) {
+    public ApiResponse<TopicDto> getPageWithRepliesForTopic(Long topicId, int pageNumber, int pageSize) {
+        TopicDto topic = topicService.getTopicDto(topicId);
+        P.clearUserSensitiveData(topic.getUser());
+
         Pageable paging = PageRequest.of(pageNumber, pageSize);
         Page<ReplyEntity> pageResult = replyRepository.findByTopicId(topicId, paging);
         P.syso(pageResult.getTotalElements());
+
+
         if (pageResult.hasContent()) {
-            return new ApiResponse<List<ReplyDto>>(HttpStatus.OK.value(), "Fetched successfully",
-                    pageResult.getContent().stream().map(replyMapper::replyEntityToDto).collect(Collectors.toList()), pageResult.getTotalElements());
+            List<ReplyDto> pagedReplies = pageResult.getContent().stream().map(replyMapper::replyEntityToDto).collect(Collectors.toList());
+            pagedReplies.forEach(r -> {
+                P.clearUserSensitiveData(r.getUser());
+            });
+            topic.setRepliesPage(pagedReplies);
+            return new ApiResponse<TopicDto>(HttpStatus.OK.value(), "Fetched successfully",
+                    topic, pageResult.getTotalElements());
         } else {
-            return new ApiResponse<List<ReplyDto>>(HttpStatus.OK.value(), "Empty",
-                    new ArrayList<ReplyDto>());
+            return new ApiResponse<TopicDto>(HttpStatus.OK.value(), "Empty",
+                    new TopicDto());
         }
     }
 
@@ -72,14 +82,15 @@ public class ReplyService {
 //                .collect(Collectors.toList());
 //    }
 
-    public List<ReplyDto> getRepliesForTopic(Long topicId) {
-        TopicEntity topic = getTopicEntity(topicId);
-        return topic
-                .getReply()
-                .stream()
-                .map(replyMapper::replyEntityToDto)
-                .collect(Collectors.toList());
-    }
+//    public List<ReplyDto> getRepliesForTopic(Long topicId) {
+//
+//        TopicEntity topic = topicService.getTopicEntity(topicId);// getTopicEntity(topicId);
+//        return topic
+//                .getReply()
+//                .stream()
+//                .map(replyMapper::replyEntityToDto)
+//                .collect(Collectors.toList());
+//    }
 
     public ReplyDto updateReply(ReplyDto reply) {
         Optional<ReplyEntity> byId = replyRepository.findById(reply.getId());
@@ -94,11 +105,11 @@ public class ReplyService {
         return replyMapper.replyEntityToDto(updated);
     }
 
-    private TopicEntity getTopicEntity(Long topicId) {
-        Optional<TopicEntity> byId = topicRepository.findById(topicId);
-        if (!byId.isPresent()) {
-            throw new TopicNotFoundException("No topic found with id " + topicId);
-        }
-        return byId.get();
-    }
+//    private TopicEntity getTopicEntity(Long topicId) {
+//        Optional<TopicEntity> byId = topicRepository.findById(topicId);
+//        if (!byId.isPresent()) {
+//            throw new TopicNotFoundException("No topic found with id " + topicId);
+//        }
+//        return byId.get();
+//    }
 }
