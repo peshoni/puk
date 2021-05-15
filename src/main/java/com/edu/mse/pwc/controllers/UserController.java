@@ -1,6 +1,7 @@
 package com.edu.mse.pwc.controllers;
 
 import com.edu.mse.pwc.dtos.UserDto;
+import com.edu.mse.pwc.persistence.entities.UserEntity;
 import com.edu.mse.pwc.services.UserService;
 import com.edu.mse.pwc.utils.P;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,12 @@ public class UserController {
     @RolesAllowed(value = {"ROLE_ADMIN"})
     public UserDto createUser(@RequestBody UserDto user) {
         return userService.createUser(user);
+    }
+
+    @PostMapping("/{username}/")
+    public Long getMyId(@PathVariable String username) {
+        UserEntity entity = userService.getUserByUsername((username));
+        return entity == null ? 0 : entity.getId();
     }
 
     @GetMapping

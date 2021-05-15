@@ -26,27 +26,18 @@ import java.util.stream.Collectors;
 public class ReplyService {
     private final UserService userService;
     private final TopicService topicService;
-
     private final ReplyRepository replyRepository;
     private final ReplyMapper replyMapper;
-    //  private final TopicRepository topicRepository;
 
     public ReplyDto createReply(ReplyDto reply) {
-        P.syso(reply);
         Long topicId = reply.getTopicId();
         Long userId = reply.getUserId();
-
         TopicEntity topicEntity = topicService.getTopicEntity(topicId);
-
         ReplyEntity replyEntity = replyMapper.replyDtoToEntity(reply);
         replyEntity.setTopic(topicEntity);
-
         UserEntity userEntity = userService.getUserEntity(userId);
         replyEntity.setUser(userEntity);
-
-
         ReplyEntity newReplyEntity = replyRepository.save(replyEntity);
-
         return replyMapper.replyEntityToDto(newReplyEntity);
     }
 
@@ -73,24 +64,6 @@ public class ReplyService {
         }
     }
 
-//    public List<ReplyDto> getRepliesForTopic(Long topicId) {
-//        TopicEntity topic = getTopicEntity(topicId);
-//        return topic
-//                .getReply()
-//                .stream()
-//                .map(replyMapper::replyEntityToDto)
-//                .collect(Collectors.toList());
-//    }
-
-//    public List<ReplyDto> getRepliesForTopic(Long topicId) {
-//
-//        TopicEntity topic = topicService.getTopicEntity(topicId);// getTopicEntity(topicId);
-//        return topic
-//                .getReply()
-//                .stream()
-//                .map(replyMapper::replyEntityToDto)
-//                .collect(Collectors.toList());
-//    }
 
     public ReplyDto updateReply(ReplyDto reply) {
         Optional<ReplyEntity> byId = replyRepository.findById(reply.getId());
@@ -105,11 +78,4 @@ public class ReplyService {
         return replyMapper.replyEntityToDto(updated);
     }
 
-//    private TopicEntity getTopicEntity(Long topicId) {
-//        Optional<TopicEntity> byId = topicRepository.findById(topicId);
-//        if (!byId.isPresent()) {
-//            throw new TopicNotFoundException("No topic found with id " + topicId);
-//        }
-//        return byId.get();
-//    }
 }

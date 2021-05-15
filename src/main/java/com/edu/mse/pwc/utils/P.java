@@ -41,7 +41,6 @@ public class P {
     }
 
     public static void clearUserSensitiveData(UserDto user) {
-        user.setId(0l);
         user.setPassword("*");
         user.setUsername("*");
     }

@@ -22,9 +22,9 @@ public class CustomTokenConverter extends JwtAccessTokenConverter {
         final Map<String, Object> additionalInfo = new HashMap<>();
         UserEntity user = userService.getUserByUsername(authentication.getName());
         additionalInfo.put("id", user.getId());
-        additionalInfo.put("role", user.getRole());
-        additionalInfo.put("firstName", user.getFirstName());
-        additionalInfo.put("lastName", user.getLastName());
+//        additionalInfo.put("role", user.getRole());
+//        additionalInfo.put("firstName", user.getFirstName());
+//        additionalInfo.put("lastName", user.getLastName());
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
         return super.enhance(accessToken, authentication);
     }

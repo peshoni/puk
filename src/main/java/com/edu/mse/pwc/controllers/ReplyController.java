@@ -27,6 +27,8 @@ public class ReplyController {
     @GetMapping("/topicId/{topicId}/{page}/{size}/")
     public ApiResponse<TopicDto> getRepliesForTopic(@PathVariable Long topicId, @PathVariable(value = "page") Integer pageNumber,
                                                     @PathVariable(value = "size") Integer pageSize) {
+
+
         return replyService.getPageWithRepliesForTopic(topicId, pageNumber, pageSize);
     }
 

@@ -65,22 +65,17 @@ public class TopicService {
     }
 
     public ApiResponse<List<TopicDto>> getPageWithTopics(int pageNumber, int pageSize) {
-
-
         Pageable paging = PageRequest.of(pageNumber, pageSize);
         Page<TopicEntity> pageResult = topicRepository.findAll(paging);
-        P.syso(pageResult.getTotalElements());
         if (pageResult.hasContent()) {
-
-
+            List<TopicDto> page = pageResult.getContent().stream().map(topicMapper::topicEntityToDto).collect(Collectors.toList());
+            page.forEach(t -> P.clearUserSensitiveData(t.getUser()));
             return new ApiResponse<List<TopicDto>>(HttpStatus.OK.value(), "Fetched successfully",
-                    pageResult.getContent().stream().map(topicMapper::topicEntityToDto).collect(Collectors.toList()), pageResult.getTotalElements());
+                    page, pageResult.getTotalElements());
         } else {
             return new ApiResponse<List<TopicDto>>(HttpStatus.OK.value(), "Empty",
                     new ArrayList<TopicDto>());
         }
-
-
     }
 
     public TopicDto update(TopicDto topic) {
@@ -92,7 +87,6 @@ public class TopicService {
         TopicEntity topicEntity = byId.get();
         topicEntity.setTitle(topic.getTitle());
         topicEntity.setModifiedBy(topic.getModifiedBy());
-
 
         TopicEntity updated = topicRepository.save(topicEntity);
         return topicMapper.topicEntityToDto(updated);

@@ -51,7 +51,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     @Bean
     public TokenStore tokenStore() {
-        return new InMemoryTokenStore();
+        TokenStore store = new InMemoryTokenStore();
+        return store;
     }
 
     private PasswordEncoder encoder() {
