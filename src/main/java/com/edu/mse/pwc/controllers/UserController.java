@@ -1,10 +1,12 @@
 package com.edu.mse.pwc.controllers;
 
+import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.UserDto;
 import com.edu.mse.pwc.persistence.entities.UserEntity;
 import com.edu.mse.pwc.services.UserService;
 import com.edu.mse.pwc.utils.P;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -32,8 +34,10 @@ public class UserController {
 
     @GetMapping
     @RolesAllowed(value = {"ROLE_ADMIN"})
-    public List<UserDto> listUsers() {
-        return userService.getAllUsers();
+    public ApiResponse<List<UserDto>> listUsers() {
+        List<UserDto> users = userService.getAllUsers();
+        return new ApiResponse<List<UserDto>>(HttpStatus.OK.value(), "Fetched successfully",
+                users, users.size());
     }
 
     @PutMapping

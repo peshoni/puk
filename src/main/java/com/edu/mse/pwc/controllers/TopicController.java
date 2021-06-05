@@ -2,7 +2,9 @@ package com.edu.mse.pwc.controllers;
 
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.TopicDto;
+import com.edu.mse.pwc.persistence.entities.UserEntity;
 import com.edu.mse.pwc.services.TopicService;
+import com.edu.mse.pwc.services.UserService;
 import com.edu.mse.pwc.utils.JwtUtils;
 import com.edu.mse.pwc.utils.P;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -20,6 +23,7 @@ import java.util.List;
 public class TopicController {
 
     private final TopicService topicService;
+    private final UserService userService;
 
 
     @GetMapping("/{id}/")
@@ -48,10 +52,15 @@ public class TopicController {
     }
 
     @GetMapping("/{page}/{size}/")
-    public ApiResponse<List<TopicDto>> getPageOFTopics(
-            @PathVariable(value = "page") Integer pageNumber,
-            @PathVariable(value = "size") Integer pageSize) {
-        return topicService.getPageWithTopics(pageNumber, pageSize);
+    public ApiResponse<List<TopicDto>> getPageOFTopics(Principal principal,
+                                                       @PathVariable(value = "page") Integer pageNumber,
+                                                       @PathVariable(value = "size") Integer pageSize) {
+        P.syso(principal.getName());
+        UserEntity u = userService.getUserByUsername(principal.getName());
+        // P.syso(u);
+        ApiResponse<List<TopicDto>> response = topicService.getPageWithTopics(pageNumber, pageSize);
+        response.setEditorId(u.getId());
+        return response;
     }
 
     @PutMapping()
