@@ -2,6 +2,7 @@ package com.edu.mse.pwc.controllers;
 
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.UserDto;
+import com.edu.mse.pwc.mappers.UserMapper;
 import com.edu.mse.pwc.persistence.entities.UserEntity;
 import com.edu.mse.pwc.services.UserService;
 import com.edu.mse.pwc.utils.P;
@@ -20,6 +21,8 @@ public class UserController {
 
     private final UserService userService;
 
+    private final UserMapper userMapper;
+
     @PostMapping
     @RolesAllowed(value = {"ROLE_ADMIN"})
     public UserDto createUser(@RequestBody UserDto user) {
@@ -27,9 +30,14 @@ public class UserController {
     }
 
     @PostMapping("/{username}/")
-    public Long getMyId(@PathVariable String username) {
+    public UserDto getMyId(@PathVariable String username) {
         UserEntity entity = userService.getUserByUsername((username));
-        return entity == null ? 0 : entity.getId();
+        if (entity != null) {
+            UserDto dto = userMapper.userEntityToDto((entity));
+            P.clearUserSensitiveData(dto);
+            return dto;
+        }
+        return null;
     }
 
     @GetMapping

@@ -67,7 +67,6 @@ public class UserService {
         String userId = (String) request.getAttribute("userId");
         P.syso("USER ID: " + userId);
         final Long id = Long.valueOf(userId);
-
         return this.getUser(id);
     }
 
