@@ -15,11 +15,6 @@ public class ApiResponse<T> {
     private String message;
     private Object result;
     private long count;
-    private long editorId;
-//    private boolean create;
-//    private boolean edit;
-//    private boolean delete;
-
 
     public ApiResponse(int status, String message, Object result) {
         this.status = status;
@@ -33,5 +28,4 @@ public class ApiResponse<T> {
         this.result = result;
         this.count = count;
     }
-
 }

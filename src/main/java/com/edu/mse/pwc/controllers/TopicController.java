@@ -2,7 +2,8 @@ package com.edu.mse.pwc.controllers;
 
 import com.edu.mse.pwc.dtos.ApiResponse;
 import com.edu.mse.pwc.dtos.TopicDto;
-import com.edu.mse.pwc.persistence.entities.UserEntity;
+import com.edu.mse.pwc.persistence.entities.ActionsEntity;
+import com.edu.mse.pwc.persistence.repository.ActionsRepository;
 import com.edu.mse.pwc.services.TopicService;
 import com.edu.mse.pwc.services.UserService;
 import com.edu.mse.pwc.utils.JwtUtils;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -24,6 +24,7 @@ public class TopicController {
 
     private final TopicService topicService;
     private final UserService userService;
+    private final ActionsRepository actionsRepository;
 
 
     @GetMapping("/{id}/")
@@ -40,42 +41,49 @@ public class TopicController {
     public ApiResponse<TopicDto> createTopic(@RequestBody TopicDto topic) {
         TopicDto newTopic = topicService.createTopic(topic);
         return new ApiResponse<TopicDto>(HttpStatus.OK.value(), "Created successfully", newTopic);
-
-//        try {
-//            P.syso(topic);
-//            TopicDto newTopic = topicService.createTopic(topic);
-//            return new ApiResponse<TopicDto>(HttpStatus.OK.value(), "Created successfully", newTopic);
-//        } catch (DuplicateTopicException ex) {
-//            P.syso(ex);
-//            return new ApiResponse<TopicDto>(HttpStatus.ACCEPTED.value(), "Duplicated topic", null);
-//        }
     }
 
     @GetMapping("/{page}/{size}/")
-    public ApiResponse<List<TopicDto>> getPageOFTopics(Principal principal,
-                                                       @PathVariable(value = "page") Integer pageNumber,
-                                                       @PathVariable(value = "size") Integer pageSize) {
-        P.syso(principal.getName());
-        UserEntity u = userService.getUserByUsername(principal.getName());
-        // P.syso(u);
+    public ApiResponse<List<TopicDto>> getPageOFTopics(
+            @PathVariable(value = "page") Integer pageNumber,
+            @PathVariable(value = "size") Integer pageSize) {
         ApiResponse<List<TopicDto>> response = topicService.getPageWithTopics(pageNumber, pageSize);
-        response.setEditorId(u.getId());
         return response;
     }
 
+    @GetMapping("/saw/{userId}/{topicId}/")
+    public ApiResponse<TopicDto> userSawTopic(@PathVariable long userId, @PathVariable long topicId) {
+        P.syso(topicId);
+        P.syso(userId);
+
+        ActionsEntity act = actionsRepository.findByUserIdAndTopicId(userId, topicId);
+        P.syso(act);
+        if (act == null) {
+            P.syso("Create new entry..");
+            ActionsEntity newAct = new ActionsEntity();
+
+            newAct.setTopicId(topicId);
+            newAct.setUserId(userId);
+            newAct.setSeen(true);
+            
+
+            P.syso(newAct);
+            actionsRepository.save(newAct);
+        } else {
+            P.syso("This user already seen this topic");
+        }
+
+        return new ApiResponse<TopicDto>(HttpStatus.OK.value(), "Counted", null);
+    }
+
+
     @PutMapping()
     public TopicDto updateTopic(HttpServletRequest request, @RequestBody TopicDto topic) {
-
         String header = request.getHeader("Authorization");
         String token = header.split(" ")[1];
         P.syso(token);
 
         JwtUtils.JwtClaims claims = JwtUtils.getClaims(token);
-
-        P.syso(claims.getFirstName());
-        //     String claims = JwtDecoder.decode(header).getClaims();
-//        OAuth2AccessToken t = a.extractAccessToken(header);
-
         return topicService.update(topic);
     }
 

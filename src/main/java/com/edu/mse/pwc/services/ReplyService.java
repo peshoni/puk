@@ -44,11 +44,8 @@ public class ReplyService {
     public ApiResponse<TopicDto> getPageWithRepliesForTopic(Long topicId, int pageNumber, int pageSize) {
         TopicDto topic = topicService.getTopicDto(topicId);
         P.clearUserSensitiveData(topic.getUser());
-
         Pageable paging = PageRequest.of(pageNumber, pageSize);
         Page<ReplyEntity> pageResult = replyRepository.findByTopicId(topicId, paging);
-        P.syso(pageResult.getTotalElements());
-
 
         if (pageResult.hasContent()) {
             List<ReplyDto> pagedReplies = pageResult.getContent().stream().map(replyMapper::replyEntityToDto).collect(Collectors.toList());

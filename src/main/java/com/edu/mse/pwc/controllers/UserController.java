@@ -24,7 +24,6 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    @RolesAllowed(value = {"ROLE_ADMIN"})
     public UserDto createUser(@RequestBody UserDto user) {
         return userService.createUser(user);
     }
@@ -41,14 +40,13 @@ public class UserController {
     }
 
     @GetMapping
-    @RolesAllowed(value = {"ROLE_ADMIN"})
     public ApiResponse<List<UserDto>> listUsers() {
         List<UserDto> users = userService.getAllUsers();
         return new ApiResponse<List<UserDto>>(HttpStatus.OK.value(), "Fetched successfully",
                 users, users.size());
     }
 
-    @PutMapping
+    @PostMapping("/up/")
     @RolesAllowed(value = {"ROLE_ADMIN"})
     public UserDto updateUsers(@RequestBody UserDto user) {
         P.syso(user.toString());
