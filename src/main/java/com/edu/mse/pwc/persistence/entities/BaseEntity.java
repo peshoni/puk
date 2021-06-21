@@ -15,14 +15,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BaseEntity {
-
- 
     @CreationTimestamp
     @Column(name = "created_at")
     private Date createdAt;
-
     @UpdateTimestamp
     @Column(name = "modified_at")
     private Date modifiedAt;
-
 }

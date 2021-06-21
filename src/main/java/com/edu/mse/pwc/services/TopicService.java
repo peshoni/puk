@@ -6,7 +6,9 @@ import com.edu.mse.pwc.exceptions.DuplicateTopicException;
 import com.edu.mse.pwc.exceptions.ReplyNotFoundException;
 import com.edu.mse.pwc.exceptions.TopicNotFoundException;
 import com.edu.mse.pwc.mappers.TopicMapper;
+import com.edu.mse.pwc.persistence.entities.ActionsEntity;
 import com.edu.mse.pwc.persistence.entities.TopicEntity;
+import com.edu.mse.pwc.persistence.repository.ActionsRepository;
 import com.edu.mse.pwc.persistence.repository.TopicRepository;
 import com.edu.mse.pwc.utils.P;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class TopicService {
     private final UserService userService;
     private final TopicRepository topicRepository;
     private final TopicMapper topicMapper;
+    private final ActionsRepository actionsRepository;
 
     public TopicDto createTopic(TopicDto topic) throws DuplicateTopicException {
         try {
@@ -56,20 +59,16 @@ public class TopicService {
         throw new TopicNotFoundException("No topic with id " + id + " was found");
     }
 
-    public List<TopicDto> getAllTopics() {
-        List<TopicDto> list = topicRepository.findAll().stream().map(topicMapper::topicEntityToDto).collect(Collectors.toList());
-        list.forEach(t -> {
-            P.clearUserSensitiveData(t.getUser());
-        });
-        return list;
-    }
-
     public ApiResponse<List<TopicDto>> getPageWithTopics(int pageNumber, int pageSize) {
         Pageable paging = PageRequest.of(pageNumber, pageSize);
         Page<TopicEntity> pageResult = topicRepository.findAll(paging);
+
         if (pageResult.hasContent()) {
             List<TopicDto> page = pageResult.getContent().stream().map(topicMapper::topicEntityToDto).collect(Collectors.toList());
-            page.forEach(t -> P.clearUserSensitiveData(t.getUser()));
+            page.forEach(t -> {
+                P.clearUserSensitiveData(t.getUser());
+                t.setSeenCounter(this.actionsRepository.countUsersSawTheTopic(t.getId()));
+            });
             return new ApiResponse<List<TopicDto>>(HttpStatus.OK.value(), "Fetched successfully",
                     page, pageResult.getTotalElements());
         } else {
@@ -79,7 +78,6 @@ public class TopicService {
     }
 
     public TopicDto update(TopicDto topic) {
-
         Optional<TopicEntity> byId = topicRepository.findById(topic.getId());
         if (!byId.isPresent()) {
             throw new ReplyNotFoundException("There is no topic with id " + topic.getId());
@@ -87,9 +85,19 @@ public class TopicService {
         TopicEntity topicEntity = byId.get();
         topicEntity.setTitle(topic.getTitle());
         topicEntity.setModifiedBy(topic.getModifiedBy());
-
         TopicEntity updated = topicRepository.save(topicEntity);
         return topicMapper.topicEntityToDto(updated);
     }
 
+
+    public void markTopicAsSeen(long userId, long topicId) {
+        ActionsEntity act = actionsRepository.findByUserIdAndTopicId(userId, topicId);
+        if (act == null) {
+            ActionsEntity newAct = new ActionsEntity();
+            newAct.setTopicId(topicId);
+            newAct.setUserId(userId);
+            newAct.setSeen(true);
+            actionsRepository.save(newAct);
+        }
+    }
 }

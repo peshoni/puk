@@ -1,1 +1,0 @@
-insert into users values (nextval('HIBERNATE_SEQUENCE'), '2021-04-10T06:49:45.105+00:00', '2021-04-10T06:49:45.105+00:00', 'pesho', 'pesho', 'pesho', 'ADMIN', 'pesho')

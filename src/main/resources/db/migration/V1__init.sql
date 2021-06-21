@@ -3,7 +3,6 @@
 drop table if exists reply CASCADE;
 drop table if exists topics CASCADE;
 drop table if exists users CASCADE;
-
 drop sequence if exists hibernate_sequence;
 create sequence hibernate_sequence start with 1 increment by 1;
 

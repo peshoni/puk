@@ -4,11 +4,9 @@ import com.edu.mse.pwc.dtos.UserDto;
 import com.edu.mse.pwc.mappers.UserMapper;
 import com.edu.mse.pwc.persistence.entities.UserEntity;
 import com.edu.mse.pwc.persistence.repository.UserRepository;
-import com.edu.mse.pwc.utils.P;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -58,16 +56,7 @@ public class UserService {
     public UserDto updateUser(UserDto user) {
         UserEntity newOne = userMapper.userDtoToEntity(user);
         newOne = userRepository.save(newOne);
-        P.syso(newOne);
         return userMapper.userEntityToDto(newOne);
-    }
-
-    public UserDto getUserFromRequest(HttpServletRequest request) {
-        P.syso(request);
-        String userId = (String) request.getAttribute("userId");
-        P.syso("USER ID: " + userId);
-        final Long id = Long.valueOf(userId);
-        return this.getUser(id);
     }
 
 }

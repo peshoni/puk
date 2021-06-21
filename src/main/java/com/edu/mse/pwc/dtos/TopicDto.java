@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class TopicDto {
-
     private Long id;
     private String title;
     private Date createdAt;
@@ -22,4 +21,5 @@ public class TopicDto {
     private UserDto user;
     private Long modifiedBy;
     private List<ReplyDto> repliesPage;
+    private int seenCounter;
 }

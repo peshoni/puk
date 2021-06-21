@@ -11,10 +11,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableResourceServer
 @EnableAuthorizationServer
 public class PwcApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(PwcApplication.class, args);
     }
-
-   
 }

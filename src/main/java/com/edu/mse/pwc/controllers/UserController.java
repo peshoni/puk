@@ -18,9 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_MODERATOR", "ROLE_USER"})
 public class UserController {
-
     private final UserService userService;
-
     private final UserMapper userMapper;
 
     @PostMapping
@@ -52,22 +50,4 @@ public class UserController {
         P.syso(user.toString());
         return userService.updateUser(user);
     }
-
-
-//
-//    @PostMapping
-//    public UserDto createUser(@RequestBody UserDto userDto) {
-//        System.out.println("Create user");
-//        String pass = encoder.encode(userDto.getPassword());
-//        P.syso(pass);
-//        userDto.setPassword(pass);
-//        return userService.createUser(userDto);
-//    }
-//
-//    @GetMapping("/test")
-//    public String testPoint() {
-//
-//        return "Hello";
-//    }
-
 }
